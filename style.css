@@ -1,0 +1,24 @@
+
+
+button:active {
+    background-color: rgb(76, 76, 76);
+    color: lightgray;
+}
+
+.selected {
+    background-color: rgb(76, 76, 76);
+    color: lightgray;
+}
+
+#startBtn {
+    margin: 10px;
+    height: 50px;
+    width: 100px;
+    background-color: darkred;
+    color: white;
+} 
+
+#startBtn.active {
+    background-color: lightgreen;
+    color: black;
+}
