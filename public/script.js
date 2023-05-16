@@ -14,8 +14,13 @@ document.getElementById('startBtn').addEventListener('click', () => {
         startBtn.classList.add('started');
         startBtn.innerHTML = 'On';  
         speed = 1;
-        stat.innerHTML = `Running at speed ${speed}`
+        stat.innerHTML = "Idle"
         // API Call for activating motor
+
+        fetch('/motor/off')
+            .then(response => response.text())
+            .then(data => console.log('Script ' + data))
+            .catch(error => console.log('Error:', error));
 
     } else {
         speedRange.disabled = true;
@@ -27,6 +32,10 @@ document.getElementById('startBtn').addEventListener('click', () => {
         stat.innerHTML = "Stopped"
 
         // API Call for deactivating motor
+        fetch('/motor/on')
+            .then(response => response.text())
+            .then(data => console.log('Script ' + data))
+            .catch(error => console.log('Error:', error));
     }
 });
 
@@ -34,7 +43,12 @@ document.getElementById('startBtn').addEventListener('click', () => {
 speedRange.addEventListener('input', () => {
     if (started) {
         speed = speedRange.value;
-        stat.innerHTML = `Running at speed ${speed}`;
+        //stat.innerHTML = `Running at speed ${speed}`;
+
+        fetch(`/motor/control?number=${speed}`)
+            .then(response => response.text())
+            .then(data => stat.innerHTML = data)
+            .catch(error => console.log('Error:', error));
     }
 });
 
