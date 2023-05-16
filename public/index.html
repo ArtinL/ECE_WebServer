@@ -8,16 +8,20 @@
     <title>Document</title>
 </head>
 <body>
-    <button id="startBtn">Off</button>
-    <!-- <button id="stopBtn">Stop</button> -->
-    <div id="indicator"></div>
-
-    <p>Throttle: </p>
-
-    <input type="range" id="throttleRange" min="0" max="1" step="0.1" value="0" disabled>
-
-    <p>Status: <span id="stat">Stopped</span></p>
-
-    <script src="script.js"></script>
+    <div id="container">
+        <button id="toggle">Off</button>
+    
+        <div id="indicator"></div>
+    
+        <p>Throttle: </p>
+    
+        <input type="range" id="throtRange" min="0" max="1" step="0.1" value="0" disabled>
+        <input type="number" id="throtManual" min="0" max="100" value="" step="10" disabled>
+        <input type="button" id="throtSet" value="Set" disabled>
+    
+        <p>Status: <span id="stat">Stopped</span></p>
+    
+        <script src="script.js"></script>
+    </div>
 </body>
 </html>

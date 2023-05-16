@@ -1,67 +1,75 @@
-let startBtn = document.getElementById('startBtn');
-let stat = document.getElementById('stat');
-let throttleRange = document.getElementById('throttleRange');
+const toggle = document.getElementById('toggle');
+const throtRange = document.getElementById('throtRange');
+const throtManual = document.getElementById('throtManual');
+const throtSet = document.getElementById('throtSet');
 
 let throttle = 0;
-
 let started = false;
 
-document.getElementById('startBtn').addEventListener('click', () => {
+document.getElementById('toggle').addEventListener('click', () => {
     started = !started;
-    
-    if (started) {
-        throttleRange.disabled = false;
-        startBtn.classList.add('started');
-        startBtn.innerHTML = 'On';  
-        // API Call for activating motor
 
-        fetch('/motor/on')
+    throtRange.disabled = !started;
+    throtRange.value = 0;
+
+    throtManual.disabled = !started;
+    throtManual.value = '';
+    throtSet.disabled = true;
+
+    if (started) toggle.classList.add('started');
+    else toggle.classList.remove('started');
+
+    toggle.innerHTML = started ? 'On' : 'Off';
+    
+    throttle = 0;
+
+    fetch(`/motor/${toggle.innerHTML.toLowerCase()}`)
             .then(response => response.text())
             .then(data => updateStatus(data))
             .catch(error => console.log('Error:', error));
-
-    } else {
-        throttleRange.disabled = true;
-        throttleRange.value = 0;
-        startBtn.classList.remove('started');
-        startBtn.innerHTML = 'Off';
-        
-        throttle = 0;
-
-        // API Call for deactivating motor
-        fetch('/motor/off')
-            .then(response => response.text())
-            .then(data => updateStatus(data))
-            .catch(error => console.log('Error:', error));
-    }
 });
 
 
-throttleRange.addEventListener('input', () => {
-    if (started) {
-        throttle = throttleRange.value;
-        //stat.innerHTML = `Running at throttle ${throttle}`;
+throtRange.addEventListener('input', () => {
+    if (!started) return;
+    throttle = parseFloat(throtRange.value).toFixed(2);
 
-        fetch(`/motor/control?number=${throttle}`)
-            .then(response => response.text())
-            .then(data => updateStatus(data))
-            .catch(error => console.log('Error:', error));
-    }
+    motorControlUpdate();
 });
 
-document.addEventListener('keydown', (e) => {
-
-    if (document.activeElement !== startBtn && e.key == ' ') startBtn.click();
-    
-    else if (document.activeElement !== throttleRange && started && e.key.includes('Arrow')) {
-        if (e.key == "ArrowLeft" || e.key == "ArrowDown") throttleRange.value = --throttle;
-        else if (e.key == "ArrowRight" || e.key == "ArrowUp") throttleRange.value = ++throttle;
-        throttleRange.dispatchEvent(new Event('input'));
-
-    }
-    
+throtManual.addEventListener('input', () => {
+    if (!started) return;
+    if (throtManual.value != '') throtSet.disabled = false;
+    else throtSet.disabled = true;
 });
+throtManual.addEventListener('keypress', (e) => {
+    if (!started) return;
+    if (e.key == 'Enter') throtSet.click();
+});
+
+throtSet.addEventListener('click', () => {
+    if (!started) return;
+    input = parseFloat(throtManual.value/100).toFixed(2);
+    throttle = input > 1 ? 1 : input < 0 ? 0 : input;
+    throtRange.value = throttle;
+    throtManual.value = '';
+    throtSet.disabled = true;
+
+    motorControlUpdate();
+
+});
+
+
+
+
 
 function updateStatus(status) {
-    stat.innerHTML = status;
+    document.getElementById('stat').innerHTML = status;
+}
+
+function motorControlUpdate() {
+    fetch(`/motor/control?number=${throttle}`)
+        .then(response => response.text())
+        .then(data => updateStatus(data))
+        .catch(error => console.log('Error:', error));
 }

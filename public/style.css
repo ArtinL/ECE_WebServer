@@ -1,14 +1,14 @@
 body {
     font: 18px sans-serif;
 }
+#container {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 
-
-.selected {
-    background-color: rgb(76, 76, 76);
-    color: lightgray;
-}
-
-#startBtn {
+#toggle {
     margin: 10px;
     height: 50px;
     width: 100px;
@@ -16,12 +16,12 @@ body {
     color: white;
 } 
 
-#startBtn.started {
+#toggle.started {
     background-color: lightgreen;
     color: black;
 }
 
-#throttleRange {
+#throtRange {
     margin: 10px;
     width: 300px;
 }
