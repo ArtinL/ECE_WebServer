@@ -1,8 +1,8 @@
 let startBtn = document.getElementById('startBtn');
 let stat = document.getElementById('stat');
-let speedRange = document.getElementById('speedRange');
+let throttleRange = document.getElementById('throttleRange');
 
-let speed = 0;
+let throttle = 0;
 
 let started = false;
 
@@ -10,44 +10,41 @@ document.getElementById('startBtn').addEventListener('click', () => {
     started = !started;
     
     if (started) {
-        speedRange.disabled = false;
+        throttleRange.disabled = false;
         startBtn.classList.add('started');
         startBtn.innerHTML = 'On';  
-        speed = 1;
-        stat.innerHTML = "Idle"
         // API Call for activating motor
 
-        fetch('/motor/off')
+        fetch('/motor/on')
             .then(response => response.text())
-            .then(data => console.log('Script ' + data))
+            .then(data => updateStatus(data))
             .catch(error => console.log('Error:', error));
 
     } else {
-        speedRange.disabled = true;
-        speed = 0;
-
-        speedRange.value = 0;
+        throttleRange.disabled = true;
+        throttleRange.value = 0;
         startBtn.classList.remove('started');
         startBtn.innerHTML = 'Off';
-        stat.innerHTML = "Stopped"
+        
+        throttle = 0;
 
         // API Call for deactivating motor
-        fetch('/motor/on')
+        fetch('/motor/off')
             .then(response => response.text())
-            .then(data => console.log('Script ' + data))
+            .then(data => updateStatus(data))
             .catch(error => console.log('Error:', error));
     }
 });
 
 
-speedRange.addEventListener('input', () => {
+throttleRange.addEventListener('input', () => {
     if (started) {
-        speed = speedRange.value;
-        //stat.innerHTML = `Running at speed ${speed}`;
+        throttle = throttleRange.value;
+        //stat.innerHTML = `Running at throttle ${throttle}`;
 
-        fetch(`/motor/control?number=${speed}`)
+        fetch(`/motor/control?number=${throttle}`)
             .then(response => response.text())
-            .then(data => stat.innerHTML = data)
+            .then(data => updateStatus(data))
             .catch(error => console.log('Error:', error));
     }
 });
@@ -56,11 +53,15 @@ document.addEventListener('keydown', (e) => {
 
     if (document.activeElement !== startBtn && e.key == ' ') startBtn.click();
     
-    else if (document.activeElement !== speedRange && started && e.key.includes('Arrow')) {
-        if (e.key == "ArrowLeft" || e.key == "ArrowDown") speedRange.value = --speed;
-        else if (e.key == "ArrowRight" || e.key == "ArrowUp") speedRange.value = ++speed;
-        speedRange.dispatchEvent(new Event('input'));
+    else if (document.activeElement !== throttleRange && started && e.key.includes('Arrow')) {
+        if (e.key == "ArrowLeft" || e.key == "ArrowDown") throttleRange.value = --throttle;
+        else if (e.key == "ArrowRight" || e.key == "ArrowUp") throttleRange.value = ++throttle;
+        throttleRange.dispatchEvent(new Event('input'));
 
     }
     
 });
+
+function updateStatus(status) {
+    stat.innerHTML = status;
+}
