@@ -1,9 +1,7 @@
-
-
-button:active {
-    background-color: rgb(76, 76, 76);
-    color: lightgray;
+body {
+    font: 18px sans-serif;
 }
+
 
 .selected {
     background-color: rgb(76, 76, 76);
@@ -18,7 +16,12 @@ button:active {
     color: white;
 } 
 
-#startBtn.active {
+#startBtn.started {
     background-color: lightgreen;
     color: black;
+}
+
+#speedRange {
+    margin: 10px;
+    width: 300px;
 }

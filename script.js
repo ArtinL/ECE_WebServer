@@ -1,9 +1,8 @@
-let speedBtns = document.getElementsByClassName('speedBtn');
-
 let startBtn = document.getElementById('startBtn');
-let stopBtn = document.getElementById('stopBtn');
 let stat = document.getElementById('stat');
+let speedRange = document.getElementById('speedRange');
 
+let speed = 0;
 
 let started = false;
 
@@ -11,55 +10,43 @@ document.getElementById('startBtn').addEventListener('click', () => {
     started = !started;
     
     if (started) {
-        startBtn.classList.add('active');
-        startBtn.innerHTML = 'On';
-        speedBtns[0].click();
-
+        speedRange.disabled = false;
+        startBtn.classList.add('started');
+        startBtn.innerHTML = 'On';  
+        speed = 1;
+        stat.innerHTML = `Running at speed ${speed}`
         // API Call for activating motor
 
     } else {
-        stat.innerHTML = '0';
-        startBtn.classList.remove('active');
+        speedRange.disabled = true;
+        speed = 0;
+
+        speedRange.value = 0;
+        startBtn.classList.remove('started');
         startBtn.innerHTML = 'Off';
         stat.innerHTML = "Stopped"
-        for (let button of speedBtns) button.classList.remove('selected');
 
         // API Call for deactivating motor
     }
 });
 
-for (let button of speedBtns) {
-    button.addEventListener('click', function () {
-        
-        if (started) {
-            for (let button of speedBtns) button.classList.remove('selected');
-            stat.innerHTML = `Running at speed ${button.innerHTML}`
-            button.classList.add('selected');
 
-
-            // API Call for setting motor speed to button.innerHTML
-
-        };
-    })
-}
+speedRange.addEventListener('input', () => {
+    if (started) {
+        speed = speedRange.value;
+        stat.innerHTML = `Running at speed ${speed}`;
+    }
+});
 
 document.addEventListener('keydown', (e) => {
-    if (e.key == ' ') startBtn.click();
-    else if (started && e.keyCode == 37) {
-        console.log('left')
-        for (let i = 0; i < speedBtns.length; i++) {
-            if (speedBtns[i].classList.contains('selected')) {
-                if (i > 0) speedBtns[i-1].click();
-                break;
-            }
-        }
-    } else if (started && e.keyCode == 39) {
-        console.log('right')
-        for (let i = 0; i < speedBtns.length; i++) {
-            if (speedBtns[i].classList.contains('selected')) {
-                if (i < speedBtns.length - 1) speedBtns[i+1].click();
-                break;
-            }
-        }
+
+    if (document.activeElement !== startBtn && e.key == ' ') startBtn.click();
+    
+    else if (document.activeElement !== speedRange && started && e.key.includes('Arrow')) {
+        if (e.key == "ArrowLeft" || e.key == "ArrowDown") speedRange.value = --speed;
+        else if (e.key == "ArrowRight" || e.key == "ArrowUp") speedRange.value = ++speed;
+        speedRange.dispatchEvent(new Event('input'));
+
     }
+    
 });
