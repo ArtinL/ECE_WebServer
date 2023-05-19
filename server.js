@@ -1,4 +1,8 @@
 var express = require('express');
+var { execSync } = require('child_process');
+const { write } = require('fs');
+
+
 var app = express();
 var port = 3000;
 
@@ -7,9 +11,22 @@ var status;
 
 app.use(express.static('public'));
 
+
+
+
+function writeToFPGA(input) {
+  try {
+    execSync("./mem_write" + input);
+    console.log('C program executed.');
+  } catch (error) {
+    console.error('Error executing C program:', error);
+  }
+
+}
 app.get('/motor/on', function(req, res) {
 
-  // Code to turn the motor on
+  writeToFPGA("1111");
+
   console.log("Server received motor on");
   status = 'Idle';
   res.send(status);
@@ -17,7 +34,7 @@ app.get('/motor/on', function(req, res) {
 
 app.get('/motor/off', function(req, res) {
 
-  // Code to turn the motor off
+  writeToFPGA("1110");
 
   console.log("Server received motor off");
   
@@ -29,7 +46,10 @@ app.get('/motor/control', function (req, res) {
 
     throttle = req.query.number;
 
-    // Code to control the motor based on the number
+    var binary = (throttle*10).toString(2);
+    while (binary.length < 4) binary = '0' + binary;
+    
+    writeToFPGA(binary);
 
     console.log("Server received throttle: " + throttle);
     
