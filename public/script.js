@@ -1,7 +1,7 @@
 const toggle = document.getElementById('toggle');
 const throtRange = document.getElementById('throtRange');
-const throtManual = document.getElementById('throtManual');
 const throtSet = document.getElementById('throtSet');
+const throtDisplay = document.getElementById('throtDisplay');
 
 let throttle = 0;
 let started = false;
@@ -11,15 +11,15 @@ document.getElementById('toggle').addEventListener('click', () => {
 
     throtRange.disabled = !started;
     throtRange.value = 0;
-
-    throtManual.disabled = !started;
-    throtManual.value = '';
-    throtSet.disabled = true;
+    throtDisplay.innerHTML = 0;
+    throtSet.disabled = !started;
 
     if (started) toggle.classList.add('started');
     else toggle.classList.remove('started');
 
     toggle.innerHTML = started ? 'On' : 'Off';
+
+    throtDisplay.style.color = started ? 'black' : 'gray';
     
     throttle = 0;
 
@@ -31,33 +31,16 @@ document.getElementById('toggle').addEventListener('click', () => {
 
 
 throtRange.addEventListener('input', () => {
-    if (!started) return;
-    throttle = parseFloat(throtRange.value).toFixed(2);
-
-    motorControlUpdate();
+    throttle = parseFloat(throtRange.value).toFixed(2)
+    throtDisplay.innerHTML = throttle*10;
 });
 
-throtManual.addEventListener('input', () => {
-    if (!started) return;
-    if (throtManual.value != '') throtSet.disabled = false;
-    else throtSet.disabled = true;
-});
-throtManual.addEventListener('keypress', (e) => {
-    if (!started) return;
+document.addEventListener('keypress', (e) => {
+
     if (e.key == 'Enter') throtSet.click();
 });
 
-throtSet.addEventListener('click', () => {
-    if (!started) return;
-    input = parseFloat(throtManual.value/100).toFixed(2);
-    throttle = input > 1 ? 1 : input < 0 ? 0 : input;
-    throtRange.value = throttle;
-    throtManual.value = '';
-    throtSet.disabled = true;
-
-    motorControlUpdate();
-
-});
+throtSet.addEventListener('click', () =>  motorControlUpdate());
 
 
 

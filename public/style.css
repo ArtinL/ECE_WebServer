@@ -25,3 +25,10 @@ body {
     margin: 10px;
     width: 300px;
 }
+
+#throtDisplay {
+    display: inline-block;
+    color: gray;
+    width: 20px;
+    margin: 10px;
+}
