@@ -1,7 +1,6 @@
 var express = require('express');
 var { execSync } = require('child_process');
-const { write } = require('fs');
-
+var { write } = require('fs');
 
 var app = express();
 var port = 3000;
@@ -12,8 +11,6 @@ var status;
 app.use(express.static('public'));
 
 
-
-
 function writeToFPGA(input) {
   try {
     execSync("./mem_write" + input);
@@ -21,8 +18,8 @@ function writeToFPGA(input) {
   } catch (error) {
     console.error('Error executing C program:', error);
   }
-
 }
+
 app.get('/motor/on', function(req, res) {
 
   writeToFPGA("1111");
@@ -52,6 +49,7 @@ app.get('/motor/control', function (req, res) {
     writeToFPGA(binary);
 
     console.log("Server received throttle: " + throttle);
+    console.log("Binary: " + binary)
     
     status = throttle == 0 ? "Idle" : "Running at " + (throttle*100).toFixed(0)  + " % throttle";
     res.send(status);
