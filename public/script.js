@@ -8,7 +8,7 @@ let started = false;
 
 document.getElementById('toggle').addEventListener('click', () => {
     started = !started;
-    if (!started) motorControlUpdate(`control?number=${0}`);
+    if (!started) motorControlUpdate(`control?number=${0}`, 100);
 
     throtRange.disabled = !started;
     throtRange.value = 0;
@@ -44,19 +44,19 @@ function updateStatus(status) {
     document.getElementById('stat').innerHTML = status;
 }
 
-function motorControlUpdate(request) {
+function motorControlUpdate(request, delay=1000) {
     const allButtons = document.querySelectorAll('button');
     allButtons.forEach(button => button.disabled = true);
     updateStatus('Updating...');
-    let stat;
-
-    fetch(`/motor/${request}`)
-        .then(response => response.text())
-        .then(data => stat = data)
-        .catch(error => console.log('Error:', error));
+    //let stat;
+    
     
     setTimeout(() => {
+        fetch(`/motor/${request}`)
+            .then(response => response.text())
+            .then(data => updateStatus(data))
+            .catch(error => console.log('Error:', error));
         allButtons.forEach(button => button.disabled = false);
-        updateStatus(stat)
-    }, 1000);   
+        //updateStatus(stat)
+    }, delay);   
 }
