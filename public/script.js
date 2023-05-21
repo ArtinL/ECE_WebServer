@@ -24,7 +24,7 @@ document.getElementById('toggle').addEventListener('click', () => {
     throttle = 0;
 
     motorControlUpdate(toggle.innerHTML.toLowerCase());
-    motorControlUpdate(`control?number=${0}`);
+    if (started) motorControlUpdate(`control?number=${0}`);
     
 });
 
