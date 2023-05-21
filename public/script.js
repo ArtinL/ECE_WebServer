@@ -8,6 +8,7 @@ let started = false;
 
 document.getElementById('toggle').addEventListener('click', () => {
     started = !started;
+    if (!started) motorControlUpdate(`control?number=${0}`);
 
     throtRange.disabled = !started;
     throtRange.value = 0;
@@ -24,7 +25,6 @@ document.getElementById('toggle').addEventListener('click', () => {
     throttle = 0;
 
     motorControlUpdate(toggle.innerHTML.toLowerCase());
-    if (started) motorControlUpdate(`control?number=${0}`);
     
 });
 

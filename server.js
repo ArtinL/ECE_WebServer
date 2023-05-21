@@ -52,7 +52,7 @@ app.get('/motor/control', function (req, res) {
     console.log("Server received throttle: " + throttle);
     console.log("Binary: " + binary)
     
-    status = throttle == 0 ? "Idle" : "Running at " + (throttle*100).toFixed(0)  + " % throttle";
+    status = throttle == 0 ? "Idle" : "Running at " + (throttle*100).toFixed(0)  + "% throttle";
     res.send(status);
 });
 
