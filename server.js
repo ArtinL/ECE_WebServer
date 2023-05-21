@@ -1,6 +1,6 @@
 var express = require('express');
-var { execSync } = require('child_process');
-var { write } = require('fs');
+var execSync = require('child_process').execSync;
+
 
 var app = express();
 var port = 3000;
@@ -22,7 +22,7 @@ function writeToFPGA(input) {
 
 app.get('/motor/on', function(req, res) {
 
-  writeToFPGA("1111");
+  //writeToFPGA("1111");
 
   console.log("Server received motor on");
   status = 'Idle';
@@ -31,7 +31,7 @@ app.get('/motor/on', function(req, res) {
 
 app.get('/motor/off', function(req, res) {
 
-  writeToFPGA("1110");
+  //writeToFPGA("1110");
 
   console.log("Server received motor off");
   
@@ -46,7 +46,7 @@ app.get('/motor/control', function (req, res) {
     var binary = (throttle*10).toString(2);
     while (binary.length < 4) binary = '0' + binary;
     
-    writeToFPGA(binary);
+    //writeToFPGA(binary);
 
     console.log("Server received throttle: " + throttle);
     console.log("Binary: " + binary)
