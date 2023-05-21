@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <sys/mman.h>
-#include <string.h>
 
 #define GPIO1_BASE_ADDRESS 0xFF708000
 #define GPIO1_REGISTER_SIZE 0x1000
