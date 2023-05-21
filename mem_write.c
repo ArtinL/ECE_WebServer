@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     // Close the /dev/mem device
     close(mem_fd);
 
-    printf("Value written to GPIO1: %X\n", value);
+    printf("Value written to GPIO1: %X", value);
 
     return 0;
 }
