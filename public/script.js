@@ -23,10 +23,10 @@ document.getElementById('toggle').addEventListener('click', () => {
     
     throttle = 0;
 
-    motorControlUpdate(true);
+    motorControlUpdate(toggle.innerHTML.toLowerCase());
+    motorControlUpdate(`control?number=${0}`);
     
 });
-
 
 throtRange.addEventListener('input', () => {
     throttle = parseFloat(throtRange.value).toFixed(2)
@@ -34,35 +34,29 @@ throtRange.addEventListener('input', () => {
 });
 
 document.addEventListener('keypress', (e) => {
-
     if (e.key == 'Enter') throtSet.click();
 });
 
-throtSet.addEventListener('click', () =>  motorControlUpdate(false));
-
-
-
+throtSet.addEventListener('click', () =>  motorControlUpdate(`control?number=${throttle}`));
 
 
 function updateStatus(status) {
     document.getElementById('stat').innerHTML = status;
 }
 
-function motorControlUpdate(power) {
-    let allButtons = document.querySelectorAll('button');
+function motorControlUpdate(request) {
+    const allButtons = document.querySelectorAll('button');
     allButtons.forEach(button => button.disabled = true);
+    updateStatus('Updating...');
+    let stat;
 
-    if (power) {
-        fetch(`/motor/${toggle.innerHTML.toLowerCase()}`)
-                .then(response => response.text())
-                .then(data => updateStatus(data))
-                .catch(error => console.log('Error:', error));
-    } else {
-        fetch(`/motor/control?number=${throttle}`)
-            .then(response => response.text())
-            .then(data => updateStatus(data))
-            .catch(error => console.log('Error:', error));
-    }
-
-    setTimeout(() => allButtons.forEach(button => button.disabled = false), 1000);   
+    fetch(`/motor/${request}`)
+        .then(response => response.text())
+        .then(data => stat = data)
+        .catch(error => console.log('Error:', error));
+    
+    setTimeout(() => {
+        allButtons.forEach(button => button.disabled = false);
+        updateStatus(stat)
+    }, 1000);   
 }
