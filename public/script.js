@@ -13,6 +13,7 @@ document.getElementById('toggle').addEventListener('click', () => {
     throtRange.disabled = !started;
     throtRange.value = 0;
     throtDisplay.innerHTML = 0;
+    throtSet.disabled = !started;
 
     if (started) toggle.classList.add('started');
     else toggle.classList.remove('started');
@@ -25,7 +26,7 @@ document.getElementById('toggle').addEventListener('click', () => {
 
     motorControlUpdate(toggle.innerHTML.toLowerCase());
     
-    throtSet.disabled = !started;
+    
 });
 
 throtRange.addEventListener('input', () => {
@@ -48,8 +49,6 @@ function motorControlUpdate(request, delay=1000) {
     const allButtons = document.querySelectorAll('button');
     allButtons.forEach(button => button.disabled = true);
     updateStatus('Updating...');
-    //let stat;
-    
     
     setTimeout(() => {
         fetch(`/motor/${request}`)
@@ -57,6 +56,6 @@ function motorControlUpdate(request, delay=1000) {
             .then(data => updateStatus(data))
             .catch(error => console.log('Error:', error));
         allButtons.forEach(button => button.disabled = false);
-        //updateStatus(stat)
+        if (!started) throtSet.disabled = true;
     }, delay);   
 }

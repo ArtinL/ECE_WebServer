@@ -23,21 +23,24 @@ function writeToFPGA(input) {
 
 app.get('/motor/on', function(req, res) {
 
+  console.log("Server received motor on");
+
   writeToFPGA("1111");
 
-  console.log("Server received motor on");
   status = 'Idle';
   res.send(status);
+  console.log("\n\n");
 });
 
 app.get('/motor/off', function(req, res) {
 
-  writeToFPGA("1110");
-
   console.log("Server received motor off");
   
+  writeToFPGA("1110");
+
   status = 'Off';
   res.send(status);
+  console.log("\n\n");
 });
 
 app.get('/motor/control', function (req, res) {
@@ -46,14 +49,16 @@ app.get('/motor/control', function (req, res) {
 
     var binary = (throttle*10).toString(2);
     while (binary.length < 4) binary = '0' + binary;
-    
-    writeToFPGA(binary);
 
     console.log("Server received throttle: " + throttle);
     console.log("Binary: " + binary)
     
+    writeToFPGA(binary);
+
+    
     status = throttle == 0 ? "Idle" : "Running at " + (throttle*100).toFixed(0)  + "% throttle";
     res.send(status);
+    console.log("\n\n");
 });
 
 
