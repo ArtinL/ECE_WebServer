@@ -5,7 +5,7 @@
 #include <sys/mman.h>
 #include <string.h>
 
-#define GPIO1_BASE_ADDRESS 0xFF708000
+#define GPIO1_BASE_ADDRESS 0xFF200060
 #define GPIO1_REGISTER_SIZE 0x1000
 
 int main(int argc, char *argv[]) {
