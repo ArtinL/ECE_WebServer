@@ -5,14 +5,16 @@
 #include <sys/mman.h>
 #include <string.h>
 
-#define GPIO1_BASE_ADDRESS 0xFF200060
-#define GPIO1_REGISTER_SIZE 0x1000
+#define BASE_ADDRESS 0xFF200000
+#define REGISTER_SIZE 0x1000
+#define OFFSET 0x00
 
 int main(int argc, char *argv[]) {
     if (argc != 2 || strlen(argv[1]) != 4) {
         printf("Usage: %s <4-bit-value>\n", argv[0]);
         return 1;
     }
+
 
     // Parse the command line argument as a 4-bit value
     unsigned int value = strtoul(argv[1], NULL, 2) & 0xF;
@@ -25,19 +27,19 @@ int main(int argc, char *argv[]) {
     }
 
     // Map the GPIO1 memory region into user space
-    void *gpio1_base = mmap(NULL, GPIO1_REGISTER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, mem_fd, GPIO1_BASE_ADDRESS);
-    if (gpio1_base == MAP_FAILED) {
+    void *base = mmap(NULL, REGISTER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, mem_fd, BASE_ADDRESS);
+    if (base == MAP_FAILED) {
         perror("Failed to mmap GPIO1 memory");
         close(mem_fd);
         return 1;
     }
 
     // Write the 4-bit value to the GPIO1 register
-    unsigned int *gpio1_register = (unsigned int *)((char *)gpio1_base + 0x10);
-    *gpio1_register = value;
+    unsigned int *mem_location = (unsigned int *)((char *)base + OFFSET);
+    *mem_location = value;
 
     // Unmap the GPIO1 memory region
-    if (munmap(gpio1_base, GPIO1_REGISTER_SIZE) < 0) {
+    if (munmap(base, REGISTER_SIZE) < 0) {
         perror("Failed to unmap GPIO1 memory");
     }
 
