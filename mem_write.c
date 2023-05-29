@@ -5,48 +5,48 @@
 #include <sys/mman.h>
 #include <string.h>
 
-#define BASE_ADDRESS 0xFF200000
-#define REGISTER_SIZE 0x1000
-#define OFFSET 0x00
+#define BASE_ADDR 0xC0000000
+#define OFFST 0x00
+#define SPAN 0x1000
 
 int main(int argc, char *argv[]) {
-    if (argc != 2 || strlen(argv[1]) != 4) {
-        printf("Usage: %s <4-bit-value>\n", argv[0]);
-        return 1;
+    int mem_fd;
+    void *virtual_base, *mapped_base;
+    volatile unsigned int *io_pio;
+
+    // Open the /dev/mem device
+    if ((mem_fd = open("/dev/mem", O_RDWR | O_SYNC)) == -1) {
+        printf("Failed to open /dev/mem\n");
+        return -1;
     }
 
+    // Map the physical memory region to the virtual address space
+    virtual_base = mmap(NULL, SPAN, PROT_READ | PROT_WRITE, MAP_SHARED, mem_fd, BASE_ADDR);
 
-    // Parse the command line argument as a 4-bit value
-    unsigned int value = strtoul(argv[1], NULL, 2) & 0xF;
-
-    // Open the /dev/mem device to access physical memory
-    int mem_fd = open("/dev/mem", O_RDWR | O_SYNC);
-    if (mem_fd < 0) {
-        perror("Failed to open /dev/mem");
-        return 1;
-    }
-
-    // Map the GPIO1 memory region into user space
-    void *base = mmap(NULL, REGISTER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, mem_fd, BASE_ADDRESS);
-    if (base == MAP_FAILED) {
-        perror("Failed to mmap GPIO1 memory");
+    if (virtual_base == MAP_FAILED) {
+        printf("Failed to mmap memory\n");
         close(mem_fd);
-        return 1;
+        return -1;
     }
 
-    // Write the 4-bit value to the GPIO1 register
-    unsigned int *mem_location = (unsigned int *)((char *)base + OFFSET);
-    *mem_location = value;
+    // Calculate the memory-mapped address for the PIO
+    mapped_base = virtual_base + OFFST;
 
-    // Unmap the GPIO1 memory region
-    if (munmap(base, REGISTER_SIZE) < 0) {
-        perror("Failed to unmap GPIO1 memory");
-    }
+    // Cast the mapped address to the volatile unsigned int pointer
+    io_pio = (volatile unsigned int *) mapped_base;
 
-    // Close the /dev/mem device
+    // Convert the command line argument to an integer
+    unsigned int value = strtoul(argv[1], NULL, 2);
+
+    // Write the value to the PIO register
+    *io_pio = value;
+
+    printf("Wrote %d to the PIO\n", value);
+
+    // Unmap the memory and close /dev/mem
+    munmap(virtual_base, SPAN);
     close(mem_fd);
-
-    printf("Value written to GPIO1: %X", value);
 
     return 0;
 }
+
