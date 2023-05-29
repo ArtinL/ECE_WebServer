@@ -25,7 +25,7 @@ app.get('/motor/on', function(req, res) {
 
   console.log("Server received motor on");
 
-  writeToFPGA("1111");
+  //writeToFPGA("1111");
 
   status = 'Idle';
   res.send(status);
@@ -36,7 +36,7 @@ app.get('/motor/off', function(req, res) {
 
   console.log("Server received motor off");
   
-  writeToFPGA("1110");
+  //writeToFPGA("1110");
 
   status = 'Off';
   res.send(status);
@@ -53,7 +53,7 @@ app.get('/motor/control', function (req, res) {
     console.log("Server received throttle: " + throttle);
     console.log("Binary: " + binary)
     
-    writeToFPGA(binary);
+    //writeToFPGA(binary);
 
     
     status = throttle == 0 ? "Idle" : "Running at " + (throttle*100).toFixed(0)  + "% throttle";
